@@ -49,7 +49,7 @@ async def get_llm_analysis(content: str) -> schemas.NewsAnalysis:
 
     except Exception as e:
         logger.error(f"Error calling Cerebras API or parsing response: {e}")
-        # Return a default analysis object that matches the new schema
+        # Return a default analysis object that matches the news schema
         return schemas.NewsAnalysis(
             sentiment="Neutral",
             confidence=0.0,
