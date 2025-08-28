@@ -1,7 +1,6 @@
 # --- Stage 1: Build Stage ---
-# Use an official Python image as a parent image.
-# The 'slim' variant is smaller than the default.
-FROM python:3.11-slim as builder
+# Use an official Python image as a parent image. The 'slim' variant is smaller.
+FROM python:3.11-slim AS builder
 
 # Set the working directory in the container.
 WORKDIR /app
@@ -9,15 +8,20 @@ WORKDIR /app
 # Install uv, the fast package manager.
 RUN pip install uv
 
-# Copy the dependency definition file and source code.
-COPY pyproject.toml ./
-COPY backend/ ./backend/
+# Copy dependency definition files.
+COPY pyproject.toml uv.lock* ./
 
 # Install dependencies into a virtual environment using uv.
-# This creates a self-contained environment within the image.
+# This creates a self-contained environment and leverages caching.
 RUN uv venv /app/venv && \
     . /app/venv/bin/activate && \
-    uv pip install --no-cache-dir .
+    uv pip install --no-cache-dir -r pyproject.toml
+
+# Copy the application source code.
+COPY backend/ ./backend/
+
+# Install the application itself into the venv.
+RUN . /app/venv/bin/activate && uv pip install --no-cache-dir .
 
 # --- Stage 2: Final Stage ---
 # Use a lean base image for the final production container.
@@ -27,16 +31,10 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy the virtual environment from the builder stage.
-# This is more efficient than reinstalling everything.
 COPY --from=builder /app/venv ./venv
 
 # Copy the application code.
 COPY backend/ ./backend/
-
-# Copy the environment file example.
-# Note: In a real production scenario, secrets should be managed securely,
-# for example, with Docker secrets or a cloud provider's secret manager.
-COPY .env.example ./
 
 # Activate the virtual environment by adding its bin to the PATH.
 ENV PATH="/app/venv/bin:$PATH"

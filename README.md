@@ -1,10 +1,8 @@
 # LLM Real-Time News Analysis
 
+This project provides a real-time news analysis pipeline that leverages the high-speed inference capabilities of Cerebras AI. It fetches the latest news from Google News, performs rapid analysis to extract key insights, and presents them through a dynamic, single-page web interface built with FastAPI and HTML/Jinja2 templates.
+
 ![Real-Time News Analysis in Action](docs/images/cerebras_realtime_analysis.gif)
-
-This project provides a real-time news analysis pipeline using Google News, FastAPI, Streamlit, and a large language model. It fetches the latest news articles, analyzes them to extract key insights, and presents them through a user-friendly web interface.
-
-For a detailed explanation of the system design, purpose, and cost analysis, please see the [System Design Document](./docs/system_design.md).
 
 ## Table of Contents
 
@@ -16,26 +14,41 @@ For a detailed explanation of the system design, purpose, and cost analysis, ple
   - [Environment Setup](#2-environment-setup)
   - [Running the Application](#3-running-the-application)
 - [Docker Deployment](#4-docker-deployment-optional)
+- [Documentation](#documentation)
 
 ## Features
 
 - **Real-Time News Fetching**: Gathers the latest news articles from Google News.
-- **LLM-Powered Analysis**: Utilizes a large language model to analyze articles for sentiment, key topics, and summaries.
-- **Web-Based UI**: An interactive Streamlit application to display the analysis results.
-- **RESTful API**: A FastAPI backend provides endpoints for news data and analysis.
+- **High-Speed LLM Analysis**: Utilizes Cerebras' inference service for rapid analysis of sentiment, key topics, and summaries.
+- **Dynamic Web UI**: A responsive, single-page interface built with FastAPI and HTML/Jinja2, featuring real-time updates via WebSockets.
+- **RESTful API**: The FastAPI backend exposes endpoints for controlling the news feed and streaming analysis results.
 - **Containerized Deployment**: Docker support for easy and consistent deployment.
 
 ## Project Structure
 
 ```
 .
-├── backend/         # FastAPI backend source code
-├── docs/            # Project documentation
-├── .env             # Environment variables (API keys, etc.)
-├── .gitignore       # Files to be ignored by Git
-├── Dockerfile       # Docker configuration
-├── README.md        # This file
-└── pyproject.toml   # Project dependencies
+├── backend/
+│   ├── src/
+│   │   ├── config.py
+│   │   ├── llm.py
+│   │   ├── news_fetcher.py
+│   │   ├── prompts.py
+│   │   └── schemas.py
+│   ├── templates/
+│   │   └── index.html
+│   ├── cli.py
+│   └── main.py
+├── docs/
+│   └── images/
+│       └── cerebras_realtime_analysis.gif
+├── .env.example
+├── .gitignore
+├── Dockerfile
+├── README.md
+├── justfile
+├── pyproject.toml
+└── uv.lock
 ```
 
 ## Quick Start
@@ -58,7 +71,7 @@ uv pip install -e .
 
 ### 2. Environment Setup
 
-Copy the example `.env.example` file to `.env` and add your `CEREBRAS_API_KEY`. The `.env` file is included in `.gitignore` to prevent leaking sensitive information.
+Copy the example `.env.example` file to `.env` and add your `CEREBRAS_API_KEY`.
 
 ```bash
 cp .env.example .env
@@ -67,27 +80,26 @@ cp .env.example .env
 
 ### 3. Running the Application
 
-**Start the Backend Service:**
+Start the application with a single command:
 
 ```bash
-just run-backend
+just run
 ```
 
-**Run the Frontend UI:**
-
-In a new terminal, launch the Streamlit app:
-
-```bash
-just run-frontend
-```
-
-Navigate to `http://localhost:8501` to view the application.
+Navigate to `http://localhost:8000` to view the application.
 
 ## 4. Docker Deployment (Optional)
 
-Build and run the backend service using Docker:
+Build and run the application using Docker:
 
 ```bash
 just build-docker
 just run-docker
 ```
+
+## Documentation
+
+For more detailed information about the project, please see the following documents:
+
+- **[System Design](docs/system_design.md)**: An in-depth look at the application's architecture and data flow.
+- **[Blog Post](docs/blog.md)**: A high-level overview of the project, its purpose, and its key benefits.

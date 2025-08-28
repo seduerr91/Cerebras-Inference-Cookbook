@@ -2,6 +2,7 @@ import asyncio
 import time
 import json
 import uuid
+from pathlib import Path
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, Depends, Query
 import pandas as pd
 import io
@@ -26,7 +27,8 @@ app = FastAPI(
     version=app_config.APP_VERSION,
 )
 console = Console()
-templates = Jinja2Templates(directory="templates")
+BASE_DIR = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=str(Path(BASE_DIR, "templates")))
 
 # --- Middleware ---
 app.add_middleware(
